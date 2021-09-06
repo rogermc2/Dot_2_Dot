@@ -1,5 +1,6 @@
 
 with Config;
+with Types;
 
 procedure Dot_2_Dot is
 
