@@ -9,24 +9,19 @@ with Main_Loop;
 with Types; use Types;
 
 procedure Dot_2_Dot is
-   -- For edges a -> b, store first node name
-   -- For attributes key = vale, store key name
-
 begin
    --   Get file name from command line
    --   Output file name is input file name with "-1" added
-   --
-
    if Ada.Command_Line.Argument_Count /= 1 or else
      Ada.Strings.Fixed.Index(Ada.Command_Line.Argument(1), ".") = 0 then
       Ada.Text_IO.Put_Line("Usage: dot2dot file (with extension)");
    else
-      -- Block so files and file names are not global
+      -- Block used so that files and file names are not global
       declare
          use Ada.Text_IO;
-         Input_Name : String  := Ada.Command_Line.Argument(1);
+         Input_Name : String  := Ada.Command_Line.Argument (1);
          Output_Name: String := Ada.Strings.Fixed.Insert
-           (Input_Name, Ada.Strings.Fixed.Index(Input_Name, "."),"-1");
+           (Input_Name, Ada.Strings.Fixed.Index (Input_Name, "."),"-1");
          Input      :  File_Type;
          Output     : File_Type;
       begin
@@ -35,10 +30,10 @@ begin
          Main_Loop (Input, Output);
          Close (Input);
          Close (Output);
+
       exception
          when Name_Error => Put_Line ("No such file" & Input_Name);
       end;
-
    end if;
 
 exception
