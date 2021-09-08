@@ -11,7 +11,7 @@ package body Dot_Tables is
                    Side : Ada.Strings.Trim_End :=  Ada.Strings.Right)
                    return String renames Ada.Strings.Fixed.Trim;
 
-    procedure Put (T : Table; Output  : Ada.Text_IO.File_Type) is
+    procedure Put (T : Table_Data; Output  : Ada.Text_IO.File_Type) is
         use Ada.Text_IO;
         procedure Put_Attribute (Position : Attribute_Maps.Cursor) is
         begin
@@ -41,7 +41,7 @@ package body Dot_Tables is
             Put (Output, "  " &
                    Ada.Characters.Handling.To_Lower (Attribute'Image (A) &
                      " [ "));
-            Attribute_Maps.Iterate (T.Attribut_Map_Array (A), Put_Attribute'Access);
+            Attribute_Maps.Iterate (T.Attribute_Map_Array (A), Put_Attribute'Access);
             Put_Line (Output, "]");
         end loop;
 
@@ -50,7 +50,7 @@ package body Dot_Tables is
         Put_Line (Output, "}");
     end Put;
 
-    procedure Sort (T : in out Table) is
+    procedure Sort (T : in out Table_Data) is
     begin
         Element_Sort.Sort (T.Edges);
         Element_Sort.Sort (T.Nodes);
