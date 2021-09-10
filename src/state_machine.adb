@@ -17,8 +17,8 @@ package body State_Machine is
         use Utilities;
         E : Types.Elements.Element;
     begin
-        Put_Line ("State_Machine Current_State: " &
-                    State'Image (Current_State));
+--          Put_Line ("State_Machine Current_State: " &
+--                      State'Image (Current_State));
         case Current_State is
         -- First line "digraph name {"
         when Digraph =>
@@ -35,8 +35,6 @@ package body State_Machine is
         when Open_Brace =>
             if N = Pad ("{") then
                 Current_State := Statements;
-                Put_Line ("State_Machine Open_Brace new Current_State: " &
-                            State'Image (Current_State));
             else
                 raise Syntax_Error with "{";
             end if;
@@ -163,10 +161,8 @@ package body State_Machine is
         when E : Syntax_Error =>
             Ada.Text_IO.Put_Line (Ada.Exceptions.Exception_Message (E) &
                                     " expected");
-            --           Types.Lines_IO.Put_Line (S);
-        when Ada.Text_IO.End_Error =>
-            Dot_Tables.Sort (Table);
-            --           Dot_Tables.Put (Table, Output);
+         when others =>
+            Ada.Text_IO.Put_Line ("State_Machine exception");
     end State_Machine;
 
 end State_Machine;
