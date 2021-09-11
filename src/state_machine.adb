@@ -15,7 +15,7 @@ package body State_Machine is
 
    procedure Parse_Line (N : Config.Name) is
       use Utilities;
-      E : Types.Elements.Element;
+      anElement : Types.Elements.Element;
    begin
       --          Put_Line ("State_Machine Current_State: " &
       --                      State'Image (Current_State));
@@ -140,20 +140,20 @@ package body State_Machine is
                --  Attribute list is associated with a node
                --  Put list in last element found
                Put_Line ("Nodes N: " & N);
-               E := Element_Vectors.Last_Element (Table.Nodes);
-               Attribute_Maps.Insert (E.Attributes,
+               anElement := Element_Vectors.Last_Element (Table.Nodes);
+               Attribute_Maps.Insert (anElement.Attributes,
                                       Current_Name, N);
                Element_Vectors.Replace_Element
-                 (Table.Nodes, Element_Vectors.Last (Table.Nodes), E);
+                 (Table.Nodes, Element_Vectors.Last (Table.Nodes), anElement);
 
             elsif Current_Statement = Edges then
             --  Attribute list is associated with an edge
             --  Put list in last element found
                Put_Line ("Edges N: " & N);
-               E := Element_Vectors.Last_Element (Table.Edges);
-               Attribute_Maps.Insert (E.Attributes, Current_Name, N);
+               anElement := Element_Vectors.Last_Element (Table.Edges);
+               Attribute_Maps.Insert (anElement.Attributes, Current_Name, N);
                Element_Vectors.Replace_Element
-                 (Table.Edges, Element_Vectors.Last (Table.Edges), E);
+                 (Table.Edges, Element_Vectors.Last (Table.Edges), anElement);
             else
                Put_Line ("None.");
             end if;
