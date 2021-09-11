@@ -34,7 +34,7 @@ begin
          Utilities.Get_Name (S, Finish, N);
          Continue := Finish /= 0;
          if Continue then
-            Put_Line ("Main_Loop N: " & N);
+--              Put_Line ("Main_Loop N: " & N);
             State_Machine.Parse_Line (N);
          end if;
       end loop;

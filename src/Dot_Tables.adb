@@ -62,7 +62,7 @@ package body Dot_Tables is
                      Integer'Image (Integer (anAttribute.Length)));
          Attribute_Maps.Iterate (anAttribute, Put_Attribute'Access);
          Put_Line (Output, "]");
-         Put_Line ("]");
+--           Put_Line ("Dot_Tables.Put A ]");
          New_Line;
       end loop;
 
