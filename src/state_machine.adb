@@ -51,6 +51,7 @@ package body State_Machine is
                Current_Attribute := Dot_Tables.Graphs;
                Current_State := Open_Bracket;
 
+            -- Node or edge: store name and look for edge pointer
             elsif N = Pad ("node") then
                Current_Statement := Attributes;
                Current_Attribute := Dot_Tables.Nodes;
@@ -60,7 +61,6 @@ package body State_Machine is
                Current_Statement := Attributes;
                Current_Attribute := Dot_Tables.Edges;
                Current_State := Open_Bracket;
-               -- Node or edge: store name and look for edge pointer
 
             else
                Current_Name := N;
@@ -105,6 +105,7 @@ package body State_Machine is
                Current_State := Statements;
             else
                raise Syntax_Error with "[ or ;"; end if;
+
             -- List closes with bracket; otherwise, save key
          when Attributes =>
             if N = Pad ("]") then
@@ -113,29 +114,33 @@ package body State_Machine is
                Current_Name := N;
                Current_State := Equals;
             end if;
+
          when Equals =>
             if N = Pad ("=") then
                Current_State := Values;
             else
                raise Syntax_Error with "=";
             end if;
-            -- Value found, insert key and value in attribute list
+
+         -- Value found, insert key and value in attribute list
          when Values =>
             -- graph | node | edge attribute list
             if Current_Statement = Attributes then
                Attribute_Maps.Insert
-                 (Table.Attribute_Map_Array (Current_Attribute), Current_Name, N);
+                 (Table.Attribute_Map_Array (Current_Attribute),
+                  Current_Name, N);
                -- Attribute list associate with a node
                -- Put list in last element found
+
             elsif Current_Statement = Nodes then
                E := Element_Vectors.Last_Element (Table.Nodes);
-               Attribute_Maps.Insert (
-                                      E.Attributes,
+               Attribute_Maps.Insert (E.Attributes,
                                       Current_Name, N);
-               Element_Vectors.Replace_Element (
-                                                Table.Nodes, Element_Vectors.Last (Table.Nodes), E);
-               -- Attribute list associate with an edge
-               -- Put list in last element found
+               Element_Vectors.Replace_Element
+                 (Table.Nodes, Element_Vectors.Last (Table.Nodes), E);
+
+            -- if Attribute list is associated with an edge
+            -- Put list in last element found
             elsif Current_Statement = Edges then
                E := Element_Vectors.Last_Element (Table.Edges);
                Attribute_Maps.Insert (
@@ -144,9 +149,10 @@ package body State_Machine is
                Element_Vectors.Replace_Element
                  (Table.Edges, Element_Vectors.Last (Table.Edges), E);
             end if;
+
             Current_State := Attributes;
 
-            -- End of statement
+         -- End of statement
          when Semicolon =>
             if N = Pad (";") then
                Current_State := Statements;
