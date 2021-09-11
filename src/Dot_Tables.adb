@@ -17,17 +17,13 @@ package body Dot_Tables is
 
       procedure Put_Attribute (Position : Attribute_Maps.Cursor) is
       begin
-         Put_Line ("Put_Attribute entered");
          Put (Output, Trim (Attribute_Maps.Key (Position)) & " = " &
-                Trim (Attribute_Maps.Element (Position)) & ' ');
-         Put_Line ("Put_Attribute: " & Trim (Attribute_Maps.Key (Position)) & " = " &
                 Trim (Attribute_Maps.Element (Position)) & ' ');
       end Put_Attribute;
 
       procedure Put_Element (Position : Element_Vectors.Cursor) is
          E : Elements.Element renames Element_Vectors.Element (Position);
       begin
-         Put_Line ("Put_Attribute entered");
          Put (Output, Trim (E.Source));
          Put (Trim (E.Source));
          if E.Target /= Elements.Blanks then
@@ -40,30 +36,18 @@ package body Dot_Tables is
             Put (Output, " ] ");
          end if;
          Put_Line (Output, ";");
-         Put_Line (";");
 
       end Put_Element;
 
    begin
       Put_Line (Output, "digraph"  & Trim (T.Graph_Name) & " {");
---        Put_Line ("digraph"  & Trim (T.Graph_Name) & " {");
       for A in Attribute loop
-         Put_Line ("Dot_Tables.Put A in Attribute: "  & Attribute'Image (A));
          Put (Output, "  " &
                 Ada.Characters.Handling.To_Lower (Attribute'Image (A) &
                   " [ "));
-         Put ("  " &
-                Ada.Characters.Handling.To_Lower (Attribute'Image (A) &
-                  " [ "));
-         Put_Line ("Attribute_Map_Array.Length: " &
-                     Integer'Image (Integer (T.Attribute_Map_Array'Length)));
          anAttribute := T.Attribute_Map_Array (A);
-         Put_Line ("anAttribute.Length: " &
-                     Integer'Image (Integer (anAttribute.Length)));
          Attribute_Maps.Iterate (anAttribute, Put_Attribute'Access);
          Put_Line (Output, "]");
---           Put_Line ("Dot_Tables.Put A ]");
-         New_Line;
       end loop;
 
       Element_Vectors.Iterate (T.Nodes, Put_Element'Access);

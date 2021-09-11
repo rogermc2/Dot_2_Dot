@@ -28,27 +28,21 @@ begin
 
    while not End_Of_File (Input) loop
       S := Types.Lines_IO.Get_Line (Input);
---        Put_Line ("S: " & To_String (S));
       Continue := True;
       while Continue loop
          Utilities.Get_Name (S, Finish, N);
          Continue := Finish /= 0;
          if Continue then
---              Put_Line ("Main_Loop N: " & N);
             State_Machine.Parse_Line (Table, N);
          end if;
       end loop;
    end loop;
-   New_Line;
 
    Close (Input);
 
    Dot_Tables.Sort (Table);
-   Put_Line ("Table sorted.");
-   New_Line;
    Dot_Tables.Put (Table, Output);
    Close (Output);
-   Put_Line ("Main_Loop output file closed.");
 
 exception
    when E : Syntax_Error =>

@@ -8,9 +8,9 @@ with Ada.Text_IO; use Ada.Text_IO;
 package body Utilities is
 
    procedure Get_Name (aLine  : in out Lines.Bounded_String;
-                       Finish : in out Natural;        -- End of previous name,
+                       Finish : in out Natural;  -- End of previous name,
                        --   return end of this name
-                       N     : out Config.Name) is         -- Return this name
+                       N     : out Config.Name) is -- Return this name
       -- Maps for parsing
       -- If use Ada.Strings.Maps is not used, remember "use type" for "or"
       use Lines, Ada.Strings.Maps;

@@ -18,8 +18,6 @@ package body State_Machine is
       use Utilities;
       anElement : Types.Elements.Element;
    begin
-      --          Put_Line ("State_Machine Current_State: " &
-      --                      State'Image (Current_State));
       case Current_State is
          -- First line should be "digraph name {"
          when Digraph =>
@@ -40,25 +38,26 @@ package body State_Machine is
                raise Syntax_Error with "{";
             end if;
 
+         when Statements =>
             -- Statement
             --   graph | node | edge [ list of key = value ];
-         when Statements =>
-            -- Check for end of input
             if N = Pad ("}") then
+               -- end of input
                null;
-               -- Three possible attributes
             elsif N = Pad ("graph") then
+               -- Three possible attributes
                Current_Statement := Attributes;
                Current_Attribute := Dot_Tables.Graphs;
                Current_State := Open_Bracket;
 
-            -- Node or edge: store name and look for edge pointer
             elsif N = Pad ("node") then
+               -- Node: store name and look for edge pointer
                Current_Statement := Attributes;
                Current_Attribute := Dot_Tables.Nodes;
                Current_State := Open_Bracket;
 
             elsif N = Pad ("edge") then
+               -- Edge: store name and look for edge pointer
                Current_Statement := Attributes;
                Current_Attribute := Dot_Tables.Edges;
                Current_State := Open_Bracket;
@@ -69,35 +68,36 @@ package body State_Machine is
             end if;
 
          when Pointer =>
-            -- If edge pointer, look for target
             if N = Pad ("->") then
+               -- Edge pointer so look for target
                Current_Statement := Edges;
                Current_State := Targets;
-               -- Must be a node, store in element vector
             else
+               -- Must be a node, store in element vector
                Element_Vectors.Append
                  (Table.Nodes, (Source => Current_Name, Target => <>,
                                 Attributes => <>));
                Current_Statement := Nodes;
-               -- Attribute list after node
                if N = Pad ("[") then
+                  -- Attribute list after node
                   Current_State := Attributes;
                elsif N = Pad (";") then
                   Current_State := Statements;
-               else raise Syntax_Error with "[ or ;";
+               else
+                  raise Syntax_Error with "[ or ;";
                end if;
             end if;
 
-            -- Target of an edge, store in element vector
          when Targets =>
+            -- Target of an edge, store in element vector
             Element_Vectors.Append
               (Table.Edges,
                (Source => Current_Name, Target => N, Attributes => <>));
             Current_State := Open_Bracket;
 
-            -- Get attribute list
-            --   List opens with bracket
          when Open_Bracket =>
+            --  Get attribute list
+            --  List opens with bracket
             if N = Pad ("[") then
                Current_State := Attributes;
             elsif N = Pad (";") then
@@ -107,30 +107,26 @@ package body State_Machine is
 
             --  List closes with a bracket; otherwise, save key
          when Attributes =>
-            Put ("Attributes state ");
             if N = Pad ("]") then
-               Put_Line ("Attributes state ] detected");
+               --  List closes with a bracket
                Current_State := Semicolon;
             else
+               --  otherwise, save key
                Current_Name := N;
-               Put_Line ("Attributes state Current_Name: " & Current_Name);
                Current_State := Equals;
             end if;
 
          when Equals =>
             if N = Pad ("=") then
-               Put_Line ("Attributes state Equals N: " & N);
                Current_State := Values;
             else
                raise Syntax_Error with "=";
             end if;
 
-         -- Value found, insert key and value in attribute list
          when Values =>
-            Put ("Attributes state Values, Current_Statement: ");
-            -- graph | node | edge attribute list
+            -- Value found, insert key and value in attribute list
             if Current_Statement = Attributes then
-               Put_Line ("Attributes N: " & N);
+               -- graph | node | edge attribute list
                Attribute_Maps.Insert
                  (Table.Attribute_Map_Array (Current_Attribute),
                   Current_Name, N);
@@ -138,7 +134,6 @@ package body State_Machine is
             elsif Current_Statement = Nodes then
                --  Attribute list is associated with a node
                --  Put list in last element found
-               Put_Line ("Nodes N: " & N);
                anElement := Element_Vectors.Last_Element (Table.Nodes);
                Attribute_Maps.Insert (anElement.Attributes,
                                       Current_Name, N);
@@ -146,22 +141,19 @@ package body State_Machine is
                  (Table.Nodes, Element_Vectors.Last (Table.Nodes), anElement);
 
             elsif Current_Statement = Edges then
-            --  Attribute list is associated with an edge
-            --  Put list in last element found
-               Put_Line ("Edges N: " & N);
+               --  Attribute list is associated with an edge
+               --  Put list in last element found
                anElement := Element_Vectors.Last_Element (Table.Edges);
                Attribute_Maps.Insert (anElement.Attributes, Current_Name, N);
                Element_Vectors.Replace_Element
                  (Table.Edges, Element_Vectors.Last (Table.Edges), anElement);
-            else
-               Put_Line ("None.");
             end if;
 
             Current_State := Attributes;
 
          when Semicolon =>
-            -- End of statement
             if N = Pad (";") then
+               -- End of statement
                Current_State := Statements;
             else
                raise Syntax_Error with ";";
