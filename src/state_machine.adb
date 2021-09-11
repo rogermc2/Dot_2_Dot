@@ -13,14 +13,14 @@ package body State_Machine is
    Current_Name      : Config.Name;
    Table             : Dot_Tables.Table_Data;
 
-   procedure State_Machine (N : Config.Name) is
+   procedure Parse_Line (N : Config.Name) is
       use Utilities;
       E : Types.Elements.Element;
    begin
       --          Put_Line ("State_Machine Current_State: " &
       --                      State'Image (Current_State));
       case Current_State is
-         -- First line "digraph name {"
+         -- First line should be "digraph name {"
          when Digraph =>
             if N = Utilities.Pad ("digraph") then
                Current_State := Name;
@@ -106,17 +106,21 @@ package body State_Machine is
             else
                raise Syntax_Error with "[ or ;"; end if;
 
-            -- List closes with bracket; otherwise, save key
+            --  List closes with a bracket; otherwise, save key
          when Attributes =>
+            Put ("Attributes state ");
             if N = Pad ("]") then
+               Put_Line ("Attributes state ] detected");
                Current_State := Semicolon;
             else
                Current_Name := N;
+               Put_Line ("Attributes state Current_Name: " & Current_Name);
                Current_State := Equals;
             end if;
 
          when Equals =>
             if N = Pad ("=") then
+               Put_Line ("Attributes state Equals N: " & N);
                Current_State := Values;
             else
                raise Syntax_Error with "=";
@@ -124,36 +128,40 @@ package body State_Machine is
 
          -- Value found, insert key and value in attribute list
          when Values =>
+            Put ("Attributes state Values, Current_Statement: ");
             -- graph | node | edge attribute list
             if Current_Statement = Attributes then
+               Put_Line ("Attributes N: " & N);
                Attribute_Maps.Insert
                  (Table.Attribute_Map_Array (Current_Attribute),
                   Current_Name, N);
-               -- Attribute list associate with a node
-               -- Put list in last element found
 
             elsif Current_Statement = Nodes then
+               --  Attribute list is associated with a node
+               --  Put list in last element found
+               Put_Line ("Nodes N: " & N);
                E := Element_Vectors.Last_Element (Table.Nodes);
                Attribute_Maps.Insert (E.Attributes,
                                       Current_Name, N);
                Element_Vectors.Replace_Element
                  (Table.Nodes, Element_Vectors.Last (Table.Nodes), E);
 
-            -- if Attribute list is associated with an edge
-            -- Put list in last element found
             elsif Current_Statement = Edges then
+            --  Attribute list is associated with an edge
+            --  Put list in last element found
+               Put_Line ("Edges N: " & N);
                E := Element_Vectors.Last_Element (Table.Edges);
-               Attribute_Maps.Insert (
-                                      E.Attributes,
-                                      Current_Name, N);
+               Attribute_Maps.Insert (E.Attributes, Current_Name, N);
                Element_Vectors.Replace_Element
                  (Table.Edges, Element_Vectors.Last (Table.Edges), E);
+            else
+               Put_Line ("None.");
             end if;
 
             Current_State := Attributes;
 
-         -- End of statement
          when Semicolon =>
+            -- End of statement
             if N = Pad (";") then
                Current_State := Statements;
             else
@@ -167,6 +175,6 @@ package body State_Machine is
                                  " expected");
       when others =>
          Ada.Text_IO.Put_Line ("State_Machine exception");
-   end State_Machine;
+   end Parse_Line;
 
 end State_Machine;

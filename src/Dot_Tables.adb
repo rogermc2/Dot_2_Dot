@@ -27,7 +27,9 @@ package body Dot_Tables is
       procedure Put_Element (Position : Element_Vectors.Cursor) is
          E : Elements.Element renames Element_Vectors.Element (Position);
       begin
+         Put_Line ("Put_Attribute entered");
          Put (Output, Trim (E.Source));
+         Put (Trim (E.Source));
          if E.Target /= Elements.Blanks then
             Put (Output, Trim (E.Source));
          end if;
@@ -38,6 +40,7 @@ package body Dot_Tables is
             Put (Output, " ] ");
          end if;
          Put_Line (Output, ";");
+         Put_Line (";");
 
       end Put_Element;
 
@@ -45,7 +48,7 @@ package body Dot_Tables is
       Put_Line (Output, "digraph"  & Trim (T.Graph_Name) & " {");
 --        Put_Line ("digraph"  & Trim (T.Graph_Name) & " {");
       for A in Attribute loop
-         Put_Line ("A in Attribute: "  & Attribute'Image (A));
+         Put_Line ("Dot_Tables.Put A in Attribute: "  & Attribute'Image (A));
          Put (Output, "  " &
                 Ada.Characters.Handling.To_Lower (Attribute'Image (A) &
                   " [ "));
@@ -60,6 +63,7 @@ package body Dot_Tables is
          Attribute_Maps.Iterate (anAttribute, Put_Attribute'Access);
          Put_Line (Output, "]");
          Put_Line ("]");
+         New_Line;
       end loop;
 
       Element_Vectors.Iterate (T.Nodes, Put_Element'Access);

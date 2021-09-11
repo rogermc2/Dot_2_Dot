@@ -4,6 +4,6 @@ with Types; use Types;
 
 package State_Machine is
 
-   procedure State_Machine (N : Config.Name);
+   procedure Parse_Line (N : Config.Name);
 
 end State_Machine;
