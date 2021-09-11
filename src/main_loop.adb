@@ -12,9 +12,9 @@ with Utilities;
 
 procedure Main_Loop (Input_File_Name : String) is
    use Types.Lines;
-   Table       : Dot_Tables.Table_Data;
-   Input       : File_Type;
-   Output      : File_Type;
+   Table    : Dot_Tables.Table_Data;
+   Input    : File_Type;
+   Output   : File_Type;
    --  The output file name is the input file name with "-1" added.
    Output_File_Name : String := Ada.Strings.Fixed.Insert
      (Input_File_Name, Ada.Strings.Fixed.Index (Input_File_Name, "."), "-1");
@@ -35,7 +35,7 @@ begin
          Continue := Finish /= 0;
          if Continue then
 --              Put_Line ("Main_Loop N: " & N);
-            State_Machine.Parse_Line (N);
+            State_Machine.Parse_Line (Table, N);
          end if;
       end loop;
    end loop;

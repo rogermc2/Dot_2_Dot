@@ -3,6 +3,7 @@ with Ada.Exceptions;
 with Ada.Text_IO; use Ada.Text_IO;
 
 with Dot_Tables;
+with Types; use Types;
 with Utilities;
 
 package body State_Machine is
@@ -11,9 +12,9 @@ package body State_Machine is
    Current_Statement : Statement;
    Current_Attribute : Dot_Tables.Attribute;
    Current_Name      : Config.Name;
-   Table             : Dot_Tables.Table_Data;
 
-   procedure Parse_Line (N : Config.Name) is
+   procedure Parse_Line (Table : in out Dot_Tables.Table_Data;
+                         N     : Config.Name) is
       use Utilities;
       anElement : Types.Elements.Element;
    begin
@@ -89,11 +90,9 @@ package body State_Machine is
 
             -- Target of an edge, store in element vector
          when Targets =>
-            Element_Vectors.Append (
-                                    Table.Edges,
-                                    (Source => Current_Name,
-                                     Target => N,
-                                     Attributes => <>));
+            Element_Vectors.Append
+              (Table.Edges,
+               (Source => Current_Name, Target => N, Attributes => <>));
             Current_State := Open_Bracket;
 
             -- Get attribute list
