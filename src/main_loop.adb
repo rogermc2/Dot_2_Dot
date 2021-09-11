@@ -28,10 +28,13 @@ begin
 
    while not End_Of_File (Input) loop
       S := Types.Lines_IO.Get_Line (Input);
+--        Put_Line ("S: " & To_String (S));
+      Continue := True;
       while Continue loop
          Utilities.Get_Name (S, Finish, N);
          Continue := Finish /= 0;
          if Continue then
+--              Put_Line ("N: " & N);
             State_Machine.State_Machine (N);
          end if;
       end loop;
